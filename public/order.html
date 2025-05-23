@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation Details - Data Validation Studio</title>
+    <title>Order Details - Data Validation Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,18 +37,17 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-github-bg to-github-surface text-github-text min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header -->
         <div class="text-center mb-10 p-6 bg-github-surface/80 rounded-xl border border-github-border backdrop-blur-sm">
-            <h1 class="text-4xl font-bold text-github-accent mb-3">🛡️ Validation Details</h1>
-            <p class="text-github-muted text-lg">Detalhes da validação</p>
+            <h1 class="text-4xl font-bold text-github-accent mb-3">Detalhes do pedido</h1>
             <p class="text-sm text-github-muted mt-2">Use: <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL</p>
         </div>
 
         <!-- Result Section -->
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
             <div class="bg-github-bg px-6 py-4 border-b border-github-border">
-                <h2 id="resultTitle" class="text-xl font-semibold text-github-text">Detalhes da Validação</h2>
+                <h2 id="resultTitle" class="text-xl font-semibold text-github-text">Detalhes</h2>
             </div>
             <div id="resultContent" class="p-8">
                 <!-- Conteúdo será inserido aqui -->
@@ -66,7 +65,7 @@
             resultContent.innerHTML = `
                 <div class="text-center py-12">
                     <div class="w-8 h-8 border-4 border-github-border border-t-github-accent rounded-full spinner mx-auto mb-4"></div>
-                    <p class="text-github-muted">Carregando dados da validação #${id}...</p>
+                    <p class="text-github-muted">Carregando dados do pedido #${id}...</p>
                 </div>
             `;
             
@@ -96,131 +95,31 @@
         function displayValidation(validation) {
             const resultContent = document.getElementById('resultContent');
             const order = validation.order;
-            const createdAt = new Date(validation.created_at).toLocaleString('pt-BR');
-            
-            // Determinar status
-            const paymentMethod = order.payment_method;
-            const validMethods = ['credit_card', 'debit_card', 'pix', 'boleto', 'paypal'];
-            const isValid = validMethods.includes(paymentMethod);
             
             resultContent.innerHTML = `
-                <!-- Status Badge -->
-                <div class="mb-6">
-                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
-                        isValid 
-                            ? 'bg-green-500/20 text-github-success border border-green-500/30' 
-                            : 'bg-red-500/20 text-github-error border border-red-500/30'
-                    }">
-                        ${isValid ? '✅ Válido' : '❌ Inválido'}
-                    </span>
-                </div>
-                
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID da Validação</h3>
-                        <p class="text-xl font-bold">#${validation.id}</p>
-                    </div>
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Data/Hora</h3>
-                        <p class="text-xl font-bold">${createdAt}</p>
-                    </div>
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Meio de Pagamento</h3>
-                        <p class="text-xl font-bold">${paymentMethod || 'Não informado'}</p>
-                    </div>
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Status</h3>
-                        <p class="text-xl font-bold ${isValid ? 'text-github-success' : 'text-github-error'}">
-                            ${isValid ? 'Aprovado' : 'Rejeitado'}
-                        </p>
-                    </div>
+                <!-- ID Card -->
+                <div class="bg-github-bg p-6 rounded-lg border border-github-border mb-8">
+                    <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID do Pedido</h3>
+                    <p class="text-2xl font-bold">#${validation.id}</p>
                 </div>
                 
                 <!-- JSON Viewer -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-github-accent mb-4 flex items-center">
-                        📋 Dados Completos da Order
+                    <h3 class="text-lg font-semibold text-github-accent mb-4">
+                        Dados do Pedido
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
-                        <pre class="text-sm text-github-text font-mono leading-relaxed" id="jsonData">${JSON.stringify(order, null, 2)}</pre>
+                        <pre class="text-sm text-github-text font-mono leading-relaxed">${JSON.stringify(order, null, 2)}</pre>
                     </div>
                 </div>
                 
-                <!-- Quick Actions -->
-                <div class="flex flex-wrap gap-3">
-                    <button 
-                        onclick="copyToClipboard('${validation.id}')"
-                        class="px-4 py-2 bg-github-bg border border-github-border text-github-text rounded-lg hover:bg-github-border transition-colors"
-                    >
-                        📋 Copiar ID
-                    </button>
-                    <button 
-                        onclick="copyJSON()"
-                        class="px-4 py-2 bg-github-bg border border-github-border text-github-text rounded-lg hover:bg-github-border transition-colors"
-                    >
-                        📄 Copiar JSON
-                    </button>
-                    <button 
-                        onclick="window.open('${API_BASE}/validations', '_blank')"
-                        class="px-4 py-2 bg-github-bg border border-github-border text-github-text rounded-lg hover:bg-github-border transition-colors"
-                    >
-                        📊 Ver Todas
-                    </button>
-                    <button 
-                        onclick="downloadJSON('${validation.id}')"
-                        class="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                        💾 Download JSON
-                    </button>
-                    <a 
-                        href="/"
-                        class="px-4 py-2 bg-github-bg border border-github-border text-github-text rounded-lg hover:bg-github-border transition-colors inline-block"
-                    >
-                        🏠 Início
+                <!-- Back Button -->
+                <div class="text-center">
+                    <a href="/" class="px-6 py-3 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors inline-block">
+                        🏠 Voltar ao início
                     </a>
                 </div>
             `;
-        }
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('ID copiado para a área de transferência!');
-            });
-        }
-        
-        function copyJSON() {
-            const jsonText = document.getElementById('jsonData').textContent;
-            navigator.clipboard.writeText(jsonText).then(() => {
-                showToast('JSON copiado para a área de transferência!');
-            });
-        }
-        
-        function downloadJSON(id) {
-            const jsonText = document.getElementById('jsonData').textContent;
-            const blob = new Blob([jsonText], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `validation-${id}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('JSON baixado com sucesso!');
-        }
-        
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-github-accent text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => toast.classList.remove('translate-x-full'), 100);
-            setTimeout(() => {
-                toast.classList.add('translate-x-full');
-                setTimeout(() => document.body.removeChild(toast), 300);
-            }, 3000);
         }
         
         // Auto-carregar baseado na URL
@@ -234,7 +133,7 @@
                 <div class="text-center py-12">
                     <div class="text-6xl mb-4">🔍</div>
                     <h3 class="text-xl font-semibold mb-2">Nenhum ID especificado</h3>
-                    <p class="text-github-muted mb-6">Adicione <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL para ver uma validação</p>
+                    <p class="text-github-muted mb-6">Adicione <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL para ver um pedido</p>
                     <a href="/" class="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors">
                         🏠 Voltar ao início
                     </a>
