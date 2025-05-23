@@ -1,4 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import {
+  validateRequest,
+  validateRequiredFields,
+} from "../helpers/security.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -8,6 +12,22 @@ const supabase = createClient(
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método não permitido" });
+  }
+
+  // Validação de segurança
+  const securityValidation = validateRequest(req);
+  if (!securityValidation.valid) {
+    return res.status(securityValidation.code).json({
+      error: securityValidation.error,
+    });
+  }
+
+  // Validação de campos obrigatórios
+  const fieldsValidation = validateRequiredFields(req.body, ["payment_method"]);
+  if (!fieldsValidation.valid) {
+    return res.status(fieldsValidation.code).json({
+      error: fieldsValidation.error,
+    });
   }
 
   const orderData = req.body;
@@ -48,7 +68,7 @@ export default async function handler(req, res) {
         ? "Meio de pagamento válido"
         : "Meio de pagamento não aceito",
       saved: false,
-      error: "Erro ao salvar no banco",
+      error: error,
     });
   }
 }

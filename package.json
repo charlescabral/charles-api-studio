@@ -3,7 +3,7 @@
   "description": "Um laboratório de APIs, criado para simular integrações, prototipar validações e criar mocks realistas.",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vercel dev"
+    "start": "vercel dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8"
