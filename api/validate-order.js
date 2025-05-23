@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   validateRequest,
   validateRequiredFields,
-} from "../helpers/security.js";
+} from "../src/helpers/security.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
