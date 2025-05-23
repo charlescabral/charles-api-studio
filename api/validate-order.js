@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
+import { handleCors } from "../src/helpers/cors.js";
 import {
   validateRequest,
   validateRequiredFields,
 } from "../src/helpers/security.js";
-import { handleCors } from "../src/helpers/cors.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -11,19 +11,6 @@ const supabase = createClient(
 );
 
 async function handler(req, res) {
-  // ✅ CONFIGURAR CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
-
-  // ✅ HANDLE PREFLIGHT OPTIONS
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método não permitido" });
   }
@@ -36,7 +23,19 @@ async function handler(req, res) {
     });
   }
 
+  // Validação de campos obrigatórios
+  const fieldsValidation = validateRequiredFields(req.body, ["payment_method"]);
+  if (!fieldsValidation.valid) {
+    return res.status(fieldsValidation.code).json({
+      error: fieldsValidation.error,
+    });
+  }
+
   const orderData = req.body;
+  const { payment_method } = orderData;
+
+  const validMethods = ["credit_card", "debit_card", "pix", "boleto", "paypal"];
+  const isValid = validMethods.includes(payment_method);
 
   try {
     // Salvar o JSON completo no Supabase
@@ -52,15 +51,23 @@ async function handler(req, res) {
     if (error) throw error;
 
     return res.json({
-      status: "ok",
-      mensagem: "Dados salvos com sucesso",
+      status: isValid ? "ok" : "erro",
+      valido: isValid,
+      payment_method: payment_method,
+      mensagem: isValid
+        ? "Meio de pagamento válido"
+        : "Meio de pagamento não aceito",
       saved: true,
       id: data?.[0]?.id,
     });
   } catch (error) {
     return res.json({
-      status: "erro",
-      mensagem: "Erro ao salvar dados",
+      status: isValid ? "ok" : "erro",
+      valido: isValid,
+      payment_method: payment_method,
+      mensagem: isValid
+        ? "Meio de pagamento válido"
+        : "Meio de pagamento não aceito",
       saved: false,
       error: error,
     });

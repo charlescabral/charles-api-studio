@@ -1,6 +1,6 @@
 // api/validation/[id].js
 import { createClient } from "@supabase/supabase-js";
-import { handleCors } from "../src/helpers/cors.js";
+import { handleCors } from "../../src/helpers/cors.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -40,7 +40,6 @@ async function handler(req, res) {
   }
 }
 
-// Exportar com CORS
 export default function (req, res) {
   return handleCors(req, res, handler);
 }

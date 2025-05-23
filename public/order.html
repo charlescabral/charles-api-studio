@@ -103,7 +103,13 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE}/order/${id}`);
+                const response = await fetch(`${API_BASE}/order/${id}`, {
+                    crossDomain: true,
+                    headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    }
+                });
                 const data = await response.json();
                 
                 if (!response.ok) {
