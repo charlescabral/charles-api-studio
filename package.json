@@ -1,20 +1,8 @@
 {
   "name": "data-validation-studio",
-  "version": "1.0.0",
   "description": "Um laboratório de APIs, criado para simular integrações, prototipar validações e criar mocks realistas.",
-  "main": "index.js",
+  "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/charlescabral/data-validation-studio.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/charlescabral/data-validation-studio/issues"
-  },
-  "homepage": "https://github.com/charlescabral/data-validation-studio#readme"
+    "dev": "vercel dev"
+  }
 }
