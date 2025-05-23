@@ -37,10 +37,11 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-github-bg to-github-surface text-github-text min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- Header -->
         <div class="text-center mb-10 p-6 bg-github-surface/80 rounded-xl border border-github-border backdrop-blur-sm">
-            <h1 class="text-4xl font-bold text-github-accent mb-3">Detalhes do pedido</h1>
+            <h1 class="text-4xl font-bold text-github-accent mb-3">Order Details</h1>
+            <p class="text-github-muted text-lg">Detalhes do pedido</p>
             <p class="text-sm text-github-muted mt-2">Use: <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL</p>
         </div>
 
@@ -95,18 +96,39 @@
         function displayValidation(validation) {
             const resultContent = document.getElementById('resultContent');
             const order = validation.order;
+            const sessionData = order.session_data || {};
             
             resultContent.innerHTML = `
-                <!-- ID Card -->
-                <div class="bg-github-bg p-6 rounded-lg border border-github-border mb-8">
-                    <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID do Pedido</h3>
-                    <p class="text-2xl font-bold">#${validation.id}</p>
+                <!-- Info Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- ID Card -->
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID do Pedido</h3>
+                        <p class="text-2xl font-bold">#${validation.id}</p>
+                    </div>
+                    
+                    <!-- IP Card -->
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Endereço IP</h3>
+                        <p class="text-2xl font-bold font-mono">${sessionData.ip_address || 'N/A'}</p>
+                    </div>
+                    
+                    <!-- Weather Card -->
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Clima</h3>
+                        ${sessionData.weather ? `
+                            <div class="space-y-1">
+                                <p class="text-lg font-bold">${sessionData.weather.condition}</p>
+                                <p class="text-sm text-github-muted">${sessionData.weather.temperature}°C • ${sessionData.weather.humidity}% umidade</p>
+                            </div>
+                        ` : '<p class="text-2xl font-bold text-github-muted">N/A</p>'}
+                    </div>
                 </div>
                 
                 <!-- JSON Viewer -->
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-github-accent mb-4">
-                        Dados do Pedido
+                        📋 Dados do Pedido
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
                         <pre class="text-sm text-github-text font-mono leading-relaxed">${JSON.stringify(order, null, 2)}</pre>
