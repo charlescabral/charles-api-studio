@@ -3,13 +3,14 @@ import {
   validateRequest,
   validateRequiredFields,
 } from "../src/helpers/security.js";
+import { handleCors } from "../src/helpers/cors.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   // ✅ CONFIGURAR CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -64,4 +65,8 @@ export default async function handler(req, res) {
       error: error,
     });
   }
+}
+
+export default function (req, res) {
+  return handleCors(req, res, handler);
 }

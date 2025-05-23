@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Details - Data Validation Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        github: {
+                            bg: '#0d1117',
+                            surface: '#161b22',
+                            border: '#30363d',
+                            text: '#e6edf3',
+                            muted: '#7d8590',
+                            accent: '#58a6ff',
+                            success: '#3fb950',
+                            error: '#f85149'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-github-bg to-github-surface text-github-text">
+    <div class="container max-w-6xl px-4 py-8 mx-auto">
+        <!-- Header -->
+        <div class="p-6 mb-10 text-center border bg-github-surface/80 rounded-xl border-github-border backdrop-blur-sm">
+            <h1 class="mb-3 text-4xl font-bold text-github-accent">🛡️ Validation Details</h1>
+            <p class="text-lg text-github-muted">Consulte os detalhes de uma validação específica</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="p-8 mb-8 border shadow-xl bg-github-surface rounded-xl border-github-border">
+            <form class="flex flex-col items-end gap-4 md:flex-row" id="searchForm">
+                <div class="flex-1 min-w-0">
+                    <label for="validationId" class="block mb-2 text-sm font-medium text-github-text">
+                        ID da Validação
+                    </label>
+                    <input 
+                        type="number" 
+                        id="validationId" 
+                        placeholder="Digite o ID (ex: 16)" 
+                        required
+                        class="w-full px-4 py-3 transition-all border rounded-lg bg-github-bg border-github-border text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent focus:border-transparent"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    id="searchBtn"
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                    🔍 Buscar Validação
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="hidden overflow-hidden border shadow-xl bg-github-surface rounded-xl border-github-border">
+            <div class="px-6 py-4 border-b bg-github-bg border-github-border">
+                <h2 id="resultTitle" class="text-xl font-semibold text-github-text">Detalhes da Validação</h2>
+            </div>
+            <div id="resultContent" class="p-8">
+                <!-- Conteúdo será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://data-validation-studio.vercel.app/api';
+        
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('validationId').value;
+            const btn = document.getElementById('searchBtn');
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '🔄 Buscando...';
+            resultSection.classList.remove('hidden');
+            resultContent.innerHTML = `
+                <div class="py-12 text-center">
+                    <div class="w-8 h-8 mx-auto mb-4 border-4 rounded-full border-github-border border-t-github-accent spinner"></div>
+                    <p class="text-github-muted">Carregando dados da validação...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`${API_BASE}/order/${id}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erro ao buscar dados');
+                }
+                
+                displayValidation(data.validation);
+                
+            } catch (error) {
+                resultContent.innerHTML = `
+                    <div class="p-6 border rounded-lg bg-red-500/10 border-red-500/30 text-github-error">
+                        <h3 class="mb-2 text-lg font-semibold">❌ Erro</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🔍 Buscar Validação';
+            }
+        });
+        
+        function displayValidation(validation) {
+            const resultContent = document.getElementById('resultContent');
+            const order = validation.order;
+            const createdAt = new Date(validation.created_at).toLocaleString('pt-BR');
+            
+            // Determinar status
+            const paymentMethod = order.payment_method;
+            const validMethods = ['credit_card', 'debit_card', 'pix', 'boleto', 'paypal'];
+            const isValid = validMethods.includes(paymentMethod);
+            
+            resultContent.innerHTML = `
+                <!-- Status Badge -->
+                <div class="mb-6">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
+                        isValid 
+                            ? 'bg-green-500/20 text-github-success border border-green-500/30' 
+                            : 'bg-red-500/20 text-github-error border border-red-500/30'
+                    }">
+                        ${isValid ? '✅ Válido' : '❌ Inválido'}
+                    </span>
+                </div>
+                
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="p-6 border rounded-lg bg-github-bg border-github-border">
+                        <h3 class="mb-2 text-xs font-semibold tracking-wider uppercase text-github-accent">ID da Validação</h3>
+                        <p class="text-xl font-bold">#${validation.id}</p>
+                    </div>
+                    <div class="p-6 border rounded-lg bg-github-bg border-github-border">
+                        <h3 class="mb-2 text-xs font-semibold tracking-wider uppercase text-github-accent">Data/Hora</h3>
+                        <p class="text-xl font-bold">${createdAt}</p>
+                    </div>
+                    <div class="p-6 border rounded-lg bg-github-bg border-github-border">
+                        <h3 class="mb-2 text-xs font-semibold tracking-wider uppercase text-github-accent">Meio de Pagamento</h3>
+                        <p class="text-xl font-bold">${paymentMethod || 'Não informado'}</p>
+                    </div>
+                    <div class="p-6 border rounded-lg bg-github-bg border-github-border">
+                        <h3 class="mb-2 text-xs font-semibold tracking-wider uppercase text-github-accent">Status</h3>
+                        <p class="text-xl font-bold ${isValid ? 'text-github-success' : 'text-github-error'}">
+                            ${isValid ? 'Aprovado' : 'Rejeitado'}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- JSON Viewer -->
+                <div class="mb-6">
+                    <h3 class="flex items-center mb-4 text-lg font-semibold text-github-accent">
+                        📋 Dados Completos da Order
+                    </h3>
+                    <div class="p-6 overflow-x-auto border rounded-lg bg-github-bg border-github-border">
+                        <pre class="font-mono text-sm leading-relaxed text-github-text" id="jsonData">${JSON.stringify(order, null, 2)}</pre>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-3">
+                    <button 
+                        onclick="copyToClipboard('${validation.id}')"
+                        class="px-4 py-2 transition-colors border rounded-lg bg-github-bg border-github-border text-github-text hover:bg-github-border"
+                    >
+                        📋 Copiar ID
+                    </button>
+                    <button 
+                        onclick="copyJSON()"
+                        class="px-4 py-2 transition-colors border rounded-lg bg-github-bg border-github-border text-github-text hover:bg-github-border"
+                    >
+                        📄 Copiar JSON
+                    </button>
+                    <button 
+                        onclick="window.open('${API_BASE}/validations', '_blank')"
+                        class="px-4 py-2 transition-colors border rounded-lg bg-github-bg border-github-border text-github-text hover:bg-github-border"
+                    >
+                        📊 Ver Todas
+                    </button>
+                    <button 
+                        onclick="downloadJSON('${validation.id}')"
+                        class="px-4 py-2 text-white transition-colors rounded-lg bg-github-accent hover:bg-blue-600"
+                    >
+                        💾 Download JSON
+                    </button>
+                </div>
+            `;
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('ID copiado para a área de transferência!');
+            });
+        }
+        
+        function copyJSON() {
+            const jsonText = document.getElementById('jsonData').textContent;
+            navigator.clipboard.writeText(jsonText).then(() => {
+                showToast('JSON copiado para a área de transferência!');
+            });
+        }
+        
+        function downloadJSON(id) {
+            const jsonText = document.getElementById('jsonData').textContent;
+            const blob = new Blob([jsonText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `validation-${id}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('JSON baixado com sucesso!');
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-github-accent text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+        
+        // Auto-buscar se tiver ID na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const idFromUrl = urlParams.get('id');
+        if (idFromUrl) {
+            document.getElementById('validationId').value = idFromUrl;
+            document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        }
+    </script>
+</body>
+</html>
