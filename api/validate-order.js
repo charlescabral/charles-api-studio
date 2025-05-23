@@ -1,4 +1,4 @@
-import { validatePaymentMethod } from "../utils/validators.js";
+import { validatePaymentMethod } from "./../utils/index.js";
 
 export default function handler(req, res) {
   if (req.method !== "POST") {
