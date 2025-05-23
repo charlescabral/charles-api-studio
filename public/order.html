@@ -71,7 +71,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE}/validation/${id}`);
+                const response = await fetch(`${API_BASE}/order/${id}`);
                 const data = await response.json();
                 
                 if (!response.ok) {
