@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   try {
     // Salvar o JSON completo no Supabase
     const { data, error } = await supabase
-      .from("validations")
+      .from("data-validation-studio")
       .insert([
         {
           order: orderData, // Salva o JSON inteiro

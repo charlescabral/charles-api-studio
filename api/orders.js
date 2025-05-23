@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   try {
     // Buscar registros com paginação
     const { data, error, count } = await supabase
-      .from("validations")
+      .from("data-validation-studio")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
