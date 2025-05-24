@@ -30,9 +30,10 @@ async function handler(req, res) {
   }
 
   const orderData = req.body;
-  const { payment_method } = orderData;
+  const paymentMethodObj = orderData.payment_method || {};
+  const method = paymentMethodObj.method || "";
 
-  const isValid = payment_method === "cashondelivery";
+  const isValid = method === "cashondelivery";
 
   try {
     let savedData = null;
@@ -57,7 +58,7 @@ async function handler(req, res) {
     return res.json({
       status: isValid ? "ok" : "erro",
       valido: isValid,
-      payment_method: payment_method,
+      payment_method: method,
       mensagem: isValid
         ? "Meio de pagamento válido"
         : "Meio de pagamento não aceito",
@@ -68,7 +69,7 @@ async function handler(req, res) {
     return res.json({
       status: isValid ? "ok" : "erro",
       valido: isValid,
-      payment_method: payment_method,
+      payment_method: method,
       mensagem: isValid
         ? "Meio de pagamento válido"
         : "Meio de pagamento não aceito",
