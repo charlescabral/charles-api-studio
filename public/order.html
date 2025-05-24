@@ -34,22 +34,172 @@
         .spinner {
             animation: spin 1s linear infinite;
         }
+        
+        /* Scrollbar Styles - Dark Mode */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f4954;
+        }
+        
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #30363d #0d1117;
+        }
+        
+        /* JSON Viewer Styles */
+        @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
+
+        .json {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 16px;
+            color: #e6edf3;
+            overflow: auto;
+            padding: 8px 0;
+        }
+        
+        .json > .json__item {
+            display: block;
+        }
+        
+        .json-container {
+            overflow: auto;
+            padding-right: 5px; /* Espaço para a barra de rolagem */
+        }
+        
+        .json__item {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+            user-select: none;
+        }
+        
+        .json__item--collapsible {
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .json__item--collapsible::before {
+            content: '+';
+            position: absolute;
+            left: 5px;
+            color: #7d8590;
+        }
+        
+        .json__item--collapsible::after {
+            background-color: #30363d;
+            content: '';
+            height: 100%;
+            left: 9px;
+            position: absolute;
+            top: 26px;
+            width: 1px;
+        }
+        
+        .json__item--collapsible:hover > .json__key,
+        .json__item--collapsible:hover > .json__value {
+            text-decoration: underline;
+        }
+        
+        .json__toggle {
+            display: none;
+        }
+        
+        .json__toggle:checked ~ .json__item {
+            display: block;
+        }
+        
+        .json__toggle:checked + .json__key + .json__value + .json__item {
+            display: block;
+        }
+        
+        .json__toggle:checked ~ .json__item--collapsible::before {
+            content: '-';
+        }
+        
+        .json__key {
+            color: #58a6ff;
+            display: inline;
+        }
+        
+        .json__key::after {
+            content: ': ';
+            color: #7d8590;
+        }
+        
+        .json__value {
+            display: inline;
+        }
+        
+        .json__value--string {
+            color: #3fb950;
+        }
+        
+        .json__value--number {
+            color: #f97583;
+        }
+        
+        .json__value--boolean {
+            color: #f97583;
+        }
+        
+        .json__value--null {
+            color: #f97583;
+            font-style: italic;
+        }
+        
+        .json__value--array {
+            color: #7d8590;
+        }
+        
+        .json__value--type-object {
+            color: #7d8590;
+            white-space: nowrap;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-github-bg to-github-surface text-github-text min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Header -->
-        <div class="text-center mb-10 p-6 bg-github-surface/80 rounded-xl border border-github-border backdrop-blur-sm">
-            <h1 class="text-4xl font-bold text-github-accent mb-3">Order Details</h1>
-            <p class="text-github-muted text-lg">Detalhes do pedido</p>
-            <p class="text-sm text-github-muted mt-2">Use: <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL</p>
+<body class="bg-gradient-to-br from-github-bg to-github-surface text-github-text min-h-screen overflow-y-auto">
+    <!-- Header -->    
+    <header class="bg-github-bg py-8 px-6 mb-2">
+        <div class="container mx-auto max-w-4xl flex justify-center items-center">
+            <!-- Logo à esquerda -->            
+            <a href="https://charlescabral.com" target="_blank" class="inline-flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="24" height="24">
+                    <path fill="white" d="M35.81,55.34A3.66,3.66,0,1,0,39.47,59,3.66,3.66,0,0,0,35.81,55.34Z"></path>
+                    <path fill="white" d="M31.67,29.59a3.66,3.66,0,1,0,3.66-3.66A3.66,3.66,0,0,0,31.67,29.59Z"></path>
+                    <path fill="white" d="M65.3,25.85A3.66,3.66,0,1,0,69,29.51,3.66,3.66,0,0,0,65.3,25.85Z"></path>
+                    <path fill="white" d="M78.14,68.59A2.18,2.18,0,0,0,81.66,68c8.57-18.77,10-42.1,10.16-54.73,0-2.39-.91-5.17-3.12-5.78A118.72,118.72,0,0,0,67,4.16a6.52,6.52,0,0,0-5.11,1.9L42.5,25.4a.06.06,0,0,0,0,.07,8.47,8.47,0,0,1,.08,8.26A7.19,7.19,0,0,1,39.25,37a8.3,8.3,0,1,1-5.43-15.49,8.25,8.25,0,0,1,5.28.77,0,0,0,0,0,.06,0L54.08,7.3a2.18,2.18,0,0,0-1.51-3.72C37.05,3.42,21.17,4.71,11.3,7.44c-2.21.61-3.16,3.39-3.12,5.78C8.38,26.67,10,52.27,20.11,71.56c9.14,17.37,23.25,23.09,28.14,24.61a6,6,0,0,0,3.5,0C56.16,94.8,68,90,77,76.42a2.17,2.17,0,0,0-.29-2.72l-7.37-7.36a0,0,0,0,0-.07,0A8.47,8.47,0,0,1,61,66.4a7.15,7.15,0,0,1-3.22-3.32,8.31,8.31,0,1,1,15.5-5.43,8.24,8.24,0,0,1-.78,5.28s0,0,0,.06ZM66.83,37.64a8.21,8.21,0,0,1-5.29-.78.06.06,0,0,0-.07,0l-18.3,18.3s0,0,0,.06a8.27,8.27,0,0,1-6.47,12,8.33,8.33,0,0,1-8.25-12.14,7.19,7.19,0,0,1,3.22-3.32,8.44,8.44,0,0,1,8.26.08s0,0,.06,0L58.13,33.69a.06.06,0,0,0,0-.07,8.47,8.47,0,0,1-.07-8.26,7.15,7.15,0,0,1,3.32-3.22,8.31,8.31,0,1,1,5.44,15.5Z"></path>
+                    <path fill="white" d="M61.51,59.17a3.66,3.66,0,1,0,3.66-3.66A3.67,3.67,0,0,0,61.51,59.17Z"></path>
+                </svg>
+                <b class="text-lg">Charles Cabral</b>
+            </a>
         </div>
+    </header>
+    
+    <div class="container mx-auto px-4 pb-8 max-w-5xl">
 
         <!-- Result Section -->
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
-            <div class="bg-github-bg px-6 py-4 border-b border-github-border">
-                <h2 id="resultTitle" class="text-xl font-semibold text-github-text">Detalhes</h2>
+            <div class="bg-github-bg px-6 py-4 border-b border-github-border flex justify-between items-center">
+                <h2 class="text-md font-bold ">Detalhes da Compra</h2>
+                <p id="resultTitle" class="text-md">Resultado da Validação</p>
             </div>
+            
             <div id="resultContent" class="p-8">
                 <!-- Conteúdo será inserido aqui -->
             </div>
@@ -58,6 +208,110 @@
 
     <script>
         const API_BASE = 'https://data-validation-studio.vercel.app/api';
+        
+        // JSON Viewer function
+        function jsonViewer(json, collapsible=false) {
+            var TEMPLATES = {
+                item: '<div class="json__item"><div class="json__key">%KEY%</div><div class="json__value json__value--%TYPE%">%VALUE%</div></div>',
+                itemCollapsible: '<label class="json__item json__item--collapsible"><input type="checkbox" class="json__toggle"/><div class="json__key">%KEY%</div><div class="json__value json__value--type-%TYPE%">%VALUE%</div>%CHILDREN%</label>',
+                itemCollapsibleOpen: '<label class="json__item json__item--collapsible"><input type="checkbox" checked class="json__toggle"/><div class="json__key">%KEY%</div><div class="json__value json__value--type-%TYPE%">%VALUE%</div>%CHILDREN%</label>'
+            };
+
+            function createItem(key, value, type){
+                var element = TEMPLATES.item.replace('%KEY%', key);
+
+                if(type == 'string') {
+                    element = element.replace('%VALUE%', '"' + value + '"');
+                } else {
+                    element = element.replace('%VALUE%', value);
+                }
+
+                element = element.replace('%TYPE%', type);
+
+                return element;
+            }
+
+            function createCollapsibleItem(key, value, type, children){
+                var tpl = 'itemCollapsible';
+                var valueText = type;
+                
+                if(collapsible) {
+                    tpl = 'itemCollapsibleOpen';
+                }
+                
+                // Mostrar informação adicional para arrays
+                if(Array.isArray(value)) {
+                    valueText = `Array(${value.length})`;
+                }
+                
+                var element = TEMPLATES[tpl].replace('%KEY%', key);
+
+                element = element.replace('%VALUE%', valueText);
+                element = element.replace('%TYPE%', type);
+                element = element.replace('%CHILDREN%', children);
+
+                return element;
+            }
+
+            function handleChildren(key, value, type) {
+                var html = '';
+                
+                if(Array.isArray(value)) {
+                    if(value.length === 0) {
+                        return createItem(key, '[]', 'array');
+                    }
+                    
+                    for(var i = 0; i < value.length; i++) {
+                        html += handleItem(i, value[i]);
+                    }
+                } else {
+                    // Verificar se o objeto estu00e1 vazio
+                    if(Object.keys(value).length === 0) {
+                        return createItem(key, '{}', 'object');
+                    }
+                    
+                    for(var item in value) { 
+                        var _key = item,
+                            _val = value[item];
+
+                        html += handleItem(_key, _val);
+                    }
+                }
+
+                return createCollapsibleItem(key, value, type, html);
+            }
+
+            function handleItem(key, value) {
+                var type = typeof value;
+                
+                if(value === null) {
+                    return createItem(key, 'null', 'null');
+                }
+
+                if(typeof value === 'object') {        
+                    return handleChildren(key, value, type);
+                }
+
+                return createItem(key, value, type);
+            }
+
+            function parseObject(obj) {
+                _result = '<div class="json">';
+
+                for(var item in obj) { 
+                    var key = item,
+                        value = obj[item];
+
+                    _result += handleItem(key, value);
+                }
+
+                _result += '</div>';
+
+                return _result;
+            }
+            
+            return parseObject(json);
+        };
         
         async function loadValidation(id) {
             const resultContent = document.getElementById('resultContent');
@@ -84,10 +338,7 @@
                 resultContent.innerHTML = `
                     <div class="bg-red-500/10 border border-red-500/30 text-github-error p-6 rounded-lg">
                         <h3 class="text-lg font-semibold mb-2">❌ Erro</h3>
-                        <p class="mb-4">${error.message}</p>
-                        <a href="/" class="inline-block px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors">
-                            ← Voltar ao início
-                        </a>
+                        <p>${error.message}</p>
                     </div>
                 `;
             }
@@ -95,27 +346,34 @@
         
         function displayValidation(validation) {
             const resultContent = document.getElementById('resultContent');
+            const resultTitle = document.getElementById('resultTitle');
             const order = validation.order;
             const sessionData = order.session_data || {};
+            
+            // Atualizar o título com o nome do cliente e URL da loja
+            const customerName = order.customer?.firstname || 'Cliente';
+            const total = order.quote.grand_total || '0';
+            const storeUrl = order.store?.base_url || 'Loja';
+            resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             resultContent.innerHTML = `
                 <!-- Info Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- ID Card -->
                     <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID do Pedido</h3>
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID da Integracao</h3>
                         <p class="text-2xl font-bold">#${validation.id}</p>
                     </div>
                     
                     <!-- IP Card -->
                     <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Endereço IP</h3>
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Endereço IP do comprador</h3>
                         <p class="text-2xl font-bold font-mono">${sessionData.ip_address || 'N/A'}</p>
                     </div>
                     
                     <!-- Weather Card -->
                     <div class="bg-github-bg p-6 rounded-lg border border-github-border">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Clima</h3>
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Clima no momento da compra</h3>
                         ${sessionData.weather ? `
                             <div class="space-y-1">
                                 <p class="text-lg font-bold">${sessionData.weather.condition}</p>
@@ -127,19 +385,12 @@
                 
                 <!-- JSON Viewer -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-github-accent mb-4">
-                        📋 Dados do Pedido
+                    <h3 class="text-lg font-semibold text-github-accent mb-4 text-center">
+                        Pedido do Magento com dados da sessão obtidos com o modulo Charles_OrderAnalizer
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
-                        <pre class="text-sm text-github-text font-mono leading-relaxed">${JSON.stringify(order, null, 2)}</pre>
+                        <div class="json-container">${jsonViewer(order, false)}</div>
                     </div>
-                </div>
-                
-                <!-- Back Button -->
-                <div class="text-center">
-                    <a href="/" class="px-6 py-3 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors inline-block">
-                        🏠 Voltar ao início
-                    </a>
                 </div>
             `;
         }
@@ -155,10 +406,7 @@
                 <div class="text-center py-12">
                     <div class="text-6xl mb-4">🔍</div>
                     <h3 class="text-xl font-semibold mb-2">Nenhum ID especificado</h3>
-                    <p class="text-github-muted mb-6">Adicione <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL para ver um pedido</p>
-                    <a href="/" class="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-blue-600 transition-colors">
-                        🏠 Voltar ao início
-                    </a>
+                    <p class="text-github-muted">Adicione <code class="bg-github-bg px-2 py-1 rounded">?id=123</code> na URL para ver um pedido</p>
                 </div>
             `;
         }
