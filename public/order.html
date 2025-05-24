@@ -191,7 +191,7 @@
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
             <div class="bg-github-bg px-6 py-4 border-b border-github-border flex justify-between items-center">
                 <h2 class="text-md font-bold ">Detalhes do Pedido</h2>
-                <p id="resultTitle" class="text-md"></p>
+                <p id="resultTitle" class="text-md text-github-muted"></p>
             </div>
             
             <div id="resultContent" class="p-8">
@@ -362,7 +362,7 @@
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             // Determina o status do pedido com base no order_id
-            const orderStatus = orderId ? "Quote" : "Entity";
+            const orderStatus = orderId ? "Entity" : "Quote";
             const orderIdDisplay = orderId ? `#${orderId}` : `#${quoteId}`;
             
             resultContent.innerHTML = `
