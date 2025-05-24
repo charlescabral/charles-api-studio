@@ -15,21 +15,25 @@ async function handler(req, res) {
     return res.status(405).json({ error: "Método não permitido" });
   }
 
+  const orderData = req.body;
+  const requiredFields = ["payment_method", "magento_quote_id"];
+  for (const field of requiredFields) {
+    if (!orderData[field]) {
+      return res.json({
+        status: "erro",
+        valido: false,
+        mensagem: `Campo obrigatório ausente: ${field}`,
+        atualizado: false,
+      });
+    }
+  }
+
   const securityValidation = validateRequest(req);
   if (!securityValidation.valid) {
     return res.status(securityValidation.code).json({
       error: securityValidation.error,
     });
   }
-
-  const fieldsValidation = validateRequiredFields(req.body, ["payment_method"]);
-  if (!fieldsValidation.valid) {
-    return res.status(fieldsValidation.code).json({
-      error: fieldsValidation.error,
-    });
-  }
-
-  const orderData = req.body;
   const paymentMethodObj = orderData.payment_method || {};
   const method = paymentMethodObj.method || "";
   const magentoQuoteId = orderData.magento_quote_id || "";
@@ -37,70 +41,45 @@ async function handler(req, res) {
   const isValid = method === "cashondelivery";
 
   try {
-    let savedData = null;
-    let saveError = null;
-    let isUpdate = false;
+    let existingData = null;
 
     if (isValid) {
-      const { data: existingData, error: searchError } = await supabase
-        .from("charles-api-studio")
+      const { data: foundData, error: searchError } = await supabase
+        .from("orders")
         .select()
         .eq("quote_id", magentoQuoteId)
         .maybeSingle();
 
       if (searchError) throw searchError;
+      existingData = foundData;
 
-      if (existingData) {
-        isUpdate = true;
-        const { data, error } = await supabase
-          .from("charles-api-studio")
-          .update({
-            order: orderData,
-          })
-          .eq("id", existingData.id)
-          .select();
+      const operation = existingData
+        ? supabase
+            .from("orders")
+            .update({ order: orderData })
+            .eq("id", existingData.id)
+        : supabase.from("orders").insert({ order: orderData });
 
-        savedData = data;
-        saveError = error;
+      const { data, error } = await operation.select();
 
-        if (error) throw error;
-
+      if (error) {
         return res.json({
-          status: "sucesso",
-          valido: true,
-          order_id: existingData.order_id,
-          id: existingData.id,
-          mensagem: "Método de pagamento aprovado",
-          atualizado: true,
+          status: "erro",
+          valido: false,
+          mensagem: "Erro no banco de dados",
+          error: error.message,
+          atualizado: false,
         });
-      } else {
-        const { data, error } = await supabase
-          .from("charles-api-studio")
-          .insert([
-            {
-              order: orderData,
-              quote_id: magentoQuoteId,
-            },
-          ])
-          .select();
-
-        savedData = data;
-        saveError = error;
-
-        if (error) throw error;
-
-        if (savedData && savedData.length > 0) {
-          const recordId = savedData[0].id;
-
-          return res.json({
-            status: "sucesso",
-            valido: true,
-            order_id: null,
-            id: recordId,
-            mensagem: "Método de pagamento aprovado",
-          });
-        }
       }
+
+      return res.json({
+        status: "sucesso",
+        valido: true,
+        order_id: existingData?.order_id || null,
+        id: existingData?.id || data[0].id,
+        mensagem: "Método de pagamento aprovado",
+        atualizado: Boolean(existingData),
+      });
     }
 
     return res.json({
@@ -110,13 +89,19 @@ async function handler(req, res) {
       mensagem: "Meio de pagamento não aceito",
     });
   } catch (error) {
-    return res.json({
+    const errorResponse = {
       status: "erro",
       valido: false,
-      payment_method: method,
       mensagem: "Erro ao processar o pagamento",
       error: error.message || String(error),
-    });
+      atualizado: false,
+    };
+
+    if (error.code) {
+      errorResponse.mensagem = `Erro de banco de dados: ${error.code}`;
+    }
+
+    return res.json(errorResponse);
   }
 }
 
