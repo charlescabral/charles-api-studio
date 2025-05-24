@@ -15,7 +15,6 @@ async function handler(req, res) {
     return res.status(405).json({ error: "Método não permitido" });
   }
 
-  // Validação de segurança
   const securityValidation = validateRequest(req);
   if (!securityValidation.valid) {
     return res.status(securityValidation.code).json({
@@ -23,7 +22,6 @@ async function handler(req, res) {
     });
   }
 
-  // Validação de campos obrigatórios
   const fieldsValidation = validateRequiredFields(req.body, ["payment_method"]);
   if (!fieldsValidation.valid) {
     return res.status(fieldsValidation.code).json({
@@ -38,12 +36,11 @@ async function handler(req, res) {
   const isValid = validMethods.includes(payment_method);
 
   try {
-    // Salvar o JSON completo no Supabase
     const { data, error } = await supabase
       .from("data-validation-studio")
       .insert([
         {
-          order: orderData, // Salva o JSON inteiro
+          order: orderData,
         },
       ])
       .select();

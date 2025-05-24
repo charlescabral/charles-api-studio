@@ -1,12 +1,8 @@
-// helpers/security.js
-
-// Cache para rate limiting e blacklist
 const requestCounts = new Map();
 const blacklist = new Set();
 
-// Configurações
 const RATE_LIMIT = {
-  windowMs: 60 * 1000, // 1 minuto
+  windowMs: 60 * 1000,
   maxRequests: 10,
 };
 
@@ -18,18 +14,16 @@ const BLOCKED_AGENTS = [
   "crawler",
   "spider",
 ];
-const MAX_PAYLOAD_SIZE = 10000; // 10KB
+const MAX_PAYLOAD_SIZE = 10000;
 
 export function validateRequest(req, options = {}) {
   const config = { ...RATE_LIMIT, ...options };
   const ip = req.headers["x-forwarded-for"]?.split(",")[0] || "unknown";
 
-  // 1. Blacklist check
   if (blacklist.has(ip)) {
     return { valid: false, error: "IP blocked", code: 403 };
   }
 
-  // 2. Rate limiting
   const now = Date.now();
 
   if (!requestCounts.has(ip)) {
@@ -51,7 +45,6 @@ export function validateRequest(req, options = {}) {
   validRequests.push(now);
   requestCounts.set(ip, validRequests);
 
-  // 3. User-Agent validation
   const userAgent = req.headers["user-agent"];
 
   if (
@@ -61,13 +54,11 @@ export function validateRequest(req, options = {}) {
     return { valid: false, error: "Invalid user agent", code: 403 };
   }
 
-  // 4. Payload size
   const jsonString = JSON.stringify(req.body);
   if (jsonString.length > MAX_PAYLOAD_SIZE) {
     return { valid: false, error: "Payload too large", code: 413 };
   }
 
-  // 5. Honeypot
   if (req.body.website || req.body.url) {
     blacklist.add(ip);
     return { valid: false, error: "Bot detected", code: 403 };

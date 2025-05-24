@@ -1,4 +1,3 @@
-// api/validation/[id].js
 import { createClient } from "@supabase/supabase-js";
 import { handleCors } from "../../src/helpers/cors.js";
 

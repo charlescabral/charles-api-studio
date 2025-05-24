@@ -209,7 +209,6 @@
     <script>
         const API_BASE = 'https://data-validation-studio.vercel.app/api';
         
-        // JSON Viewer function
         function jsonViewer(json, collapsible=false) {
             var TEMPLATES = {
                 item: '<div class="json__item"><div class="json__key">%KEY%</div><div class="json__value json__value--%TYPE%">%VALUE%</div></div>',
@@ -239,7 +238,6 @@
                     tpl = 'itemCollapsibleOpen';
                 }
                 
-                // Mostrar informação adicional para arrays
                 if(Array.isArray(value)) {
                     valueText = `Array(${value.length})`;
                 }
@@ -265,7 +263,6 @@
                         html += handleItem(i, value[i]);
                     }
                 } else {
-                    // Verificar se o objeto estu00e1 vazio
                     if(Object.keys(value).length === 0) {
                         return createItem(key, '{}', 'object');
                     }
@@ -316,7 +313,6 @@
         async function loadValidation(id) {
             const resultContent = document.getElementById('resultContent');
             
-            // Loading state
             resultContent.innerHTML = `
                 <div class="text-center py-12">
                     <div class="w-8 h-8 border-4 border-github-border border-t-github-accent rounded-full spinner mx-auto mb-4"></div>
@@ -337,7 +333,7 @@
             } catch (error) {
                 resultContent.innerHTML = `
                     <div class="bg-red-500/10 border border-red-500/30 text-github-error p-6 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">❌ Erro</h3>
+                        <h3 class="text-lg font-semibold mb-2">Erro</h3>
                         <p>${error.message}</p>
                     </div>
                 `;
@@ -350,7 +346,6 @@
             const order = validation.order;
             const sessionData = order.session_data || {};
             
-            // Atualizar o título com o nome do cliente e URL da loja
             const customerName = order.customer?.firstname || 'Cliente';
             const total = order.quote.grand_total || '0';
             const idOrder = order.quote.id || '0';
@@ -392,7 +387,7 @@
                 
                 <!-- JSON Viewer -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-github-accent mb-4 text-center">
+                    <h3 class="text-lg font-light mb-4 text-center">
                         Pedido do Magento com dados da sessão obtidos com o modulo Charles_OrderAnalizer
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
@@ -402,7 +397,6 @@
             `;
         }
         
-        // Auto-carregar baseado na URL
         const urlParams = new URLSearchParams(window.location.search);
         const idFromUrl = urlParams.get('id');
         

@@ -15,7 +15,6 @@ async function handler(req, res) {
   const offset = (page - 1) * limit;
 
   try {
-    // Buscar registros com paginação
     const { data, error, count } = await supabase
       .from("data-validation-studio")
       .select("*", { count: "exact" })
