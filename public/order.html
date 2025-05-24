@@ -197,7 +197,7 @@
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
             <div class="bg-github-bg px-6 py-4 border-b border-github-border flex justify-between items-center">
                 <h2 class="text-md font-bold ">Detalhes do Pedido</h2>
-                <p id="resultTitle" class="text-md">Resultado da Validação</p>
+                <p id="resultTitle" class="text-md"></p>
             </div>
             
             <div id="resultContent" class="p-8">
@@ -355,7 +355,7 @@
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             // Determina o status do pedido com base no order_id
-            const orderStatus = orderId ? "Pedido Iniciado" : "Pedido não iniciado";
+            const orderStatus = orderId ? "Quote" : "Entity";
             const orderIdDisplay = orderId ? `#${orderId}` : `#${quoteId}`;
             
             resultContent.innerHTML = `
@@ -389,7 +389,7 @@
                 <!-- JSON Viewer -->
                 <div class="mb-6">
                     <h3 class="text-lg font-light mb-4 text-center">
-                        Pedido do Magento com dados da sessão obtidos com o modulo Charles_OrderAnalizer
+                        Dados do pedido/sessão obtidos pelo Modulo Charles_OrderAnalizer
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
                         <div class="json-container">${jsonViewer(order, false)}</div>
