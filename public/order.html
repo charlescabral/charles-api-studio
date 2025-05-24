@@ -310,7 +310,7 @@
             return parseObject(json);
         };
         
-        async function loadValidation(id) {
+        async function loadIntegration(id) {
             const resultContent = document.getElementById('resultContent');
             
             resultContent.innerHTML = `
@@ -321,14 +321,14 @@
             `;
             
             try {
-                const fetch = await fetch(`${API_BASE}/order/${id}`);
-                const res = await fetch.json();
+                const integration = await fetch(`${API_BASE}/order/${id}`);
+                const response = await integration.json();
                 
                 if (!fetch.ok) {
                     throw new Error(data.error || 'Erro ao buscar dados');
                 }
                 
-                displayIntegration(res.data);
+                displayIntegration(response.data);
                 
             } catch (error) {
                 resultContent.innerHTML = `
@@ -401,7 +401,7 @@
         const idFromUrl = urlParams.get('id');
         
         if (idFromUrl) {
-            loadValidation(idFromUrl);
+            loadIntegration(idFromUrl);
         } else {
             document.getElementById('resultContent').innerHTML = `
                 <div class="text-center py-12">
