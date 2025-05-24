@@ -16,7 +16,7 @@ async function handler(req, res) {
 
   try {
     const { data, error, count } = await supabase
-      .from("data-validation-studio")
+      .from("charles-api-studio")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);

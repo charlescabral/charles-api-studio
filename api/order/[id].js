@@ -15,7 +15,7 @@ async function handler(req, res) {
 
   try {
     const { data, error } = await supabase
-      .from("data-validation-studio")
+      .from("charles-api-studio")
       .select("*")
       .eq("id", id)
       .single();

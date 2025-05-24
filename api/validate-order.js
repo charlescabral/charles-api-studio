@@ -43,7 +43,7 @@ async function handler(req, res) {
 
     if (isValid) {
       const { data: existingData, error: searchError } = await supabase
-        .from("data-validation-studio")
+        .from("charles-api-studio")
         .select()
         .eq("quote_id", magentoQuoteId)
         .maybeSingle();
@@ -53,7 +53,7 @@ async function handler(req, res) {
       if (existingData) {
         isUpdate = true;
         const { data, error } = await supabase
-          .from("data-validation-studio")
+          .from("charles-api-studio")
           .update({
             order: orderData,
           })
@@ -75,7 +75,7 @@ async function handler(req, res) {
         });
       } else {
         const { data, error } = await supabase
-          .from("data-validation-studio")
+          .from("charles-api-studio")
           .insert([
             {
               order: orderData,
