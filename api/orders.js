@@ -25,7 +25,7 @@ async function handler(req, res) {
 
     return res.json({
       success: true,
-      validations: data,
+      data: data,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

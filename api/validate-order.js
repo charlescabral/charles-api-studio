@@ -39,31 +39,67 @@ async function handler(req, res) {
   try {
     let savedData = null;
     let saveError = null;
+    let isUpdate = false;
 
     if (isValid) {
-      const { data, error } = await supabase
+      const { data: existingData, error: searchError } = await supabase
         .from("data-validation-studio")
-        .insert([
-          {
+        .select()
+        .eq("quote_id", magentoQuoteId)
+        .maybeSingle();
+
+      if (searchError) throw searchError;
+
+      if (existingData) {
+        isUpdate = true;
+        const { data, error } = await supabase
+          .from("data-validation-studio")
+          .update({
             order: orderData,
-          },
-        ])
-        .select();
+          })
+          .eq("id", existingData.id)
+          .select();
 
-      savedData = data;
-      saveError = error;
+        savedData = data;
+        saveError = error;
 
-      if (error) throw error;
+        if (error) throw error;
 
-      if (savedData && savedData.length > 0) {
-        const recordId = savedData[0].id;
         return res.json({
           status: "sucesso",
           valido: true,
-          order_id: `CHARLES_APROVED_${recordId}${magentoQuoteId}`,
-          id: recordId,
+          order_id: existingData.order_id,
+          id: existingData.id,
           mensagem: "Método de pagamento aprovado",
+          atualizado: true,
         });
+      } else {
+        const { data, error } = await supabase
+          .from("data-validation-studio")
+          .insert([
+            {
+              order: orderData,
+              quote_id: magentoQuoteId,
+            },
+          ])
+          .select();
+
+        savedData = data;
+        saveError = error;
+
+        if (error) throw error;
+
+        if (savedData && savedData.length > 0) {
+          const recordId = savedData[0].id;
+
+          return res.json({
+            status: "sucesso",
+            valido: true,
+            order_id: null,
+            id: recordId,
+            mensagem: "Método de pagamento aprovado",
+          });
+        }
       }
     }
 
@@ -72,7 +108,6 @@ async function handler(req, res) {
       valido: false,
       payment_method: method,
       mensagem: "Meio de pagamento não aceito",
-      saved: false,
     });
   } catch (error) {
     return res.json({
@@ -80,7 +115,6 @@ async function handler(req, res) {
       valido: false,
       payment_method: method,
       mensagem: "Erro ao processar o pagamento",
-      saved: false,
       error: error.message || String(error),
     });
   }

@@ -321,18 +321,18 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE}/order/${id}`);
-                const data = await response.json();
+                const fetch = await fetch(`${API_BASE}/order/${id}`);
+                const res = await fetch.json();
                 
-                if (!response.ok) {
+                if (!fetch.ok) {
                     throw new Error(data.error || 'Erro ao buscar dados');
                 }
                 
-                displayValidation(data.validation);
+                displayIntegration(res.data);
                 
             } catch (error) {
                 resultContent.innerHTML = `
-                    <div class="bg-red-500/10 border border-red-500/30 text-github-error p-6 rounded-lg">
+                    <div class="bg-yellow-500/10 border border-yellow-500/30 text-github-error p-6 rounded-lg">
                         <h3 class="text-lg font-semibold mb-2">Erro</h3>
                         <p>${error.message}</p>
                     </div>
@@ -340,31 +340,31 @@
             }
         }
         
-        function displayValidation(validation) {
+        function displayIntegration(data) {
             const resultContent = document.getElementById('resultContent');
             const resultTitle = document.getElementById('resultTitle');
-            const order = validation.order;
+            const order = data.order;
             const sessionData = order.session_data || {};
             
             const customerName = order.customer?.firstname || 'Cliente';
             const total = order.quote.grand_total || '0';
-            const idOrder = order.quote.id || '0';
+            const quoteId = data.quote_id || order.quote.id || '0';
+            const orderId = data.order_id;
             const storeUrl = order.store?.base_url || 'Loja';
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
+            
+            // Determina o status do pedido com base no order_id
+            const orderStatus = orderId ? "Pedido Realizado" : "Pedido Pendente";
+            const orderIdDisplay = orderId ? `#${orderId}` : `#${quoteId}`;
             
             resultContent.innerHTML = `
                 <!-- Info Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
-                    <!-- ID Card -->
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-1">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Pedido</h3>
-                        <p class="text-2xl font-bold">#${idOrder}</p>
-                    </div>
-
-                    <!-- ID Card -->
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-1">
-                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Integracao</h3>
-                        <p class="text-2xl font-bold">#${validation.id}</p>
+                    <!-- Status Card -->
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-2">
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Status no Magento</h3>
+                        <p class="text-2xl font-bold">${orderStatus}</p>
+                        <p class="text-sm text-github-muted mt-1">${orderIdDisplay}</p>
                     </div>
                     
                     <!-- IP Card -->
