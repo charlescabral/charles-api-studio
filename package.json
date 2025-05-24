@@ -1,5 +1,5 @@
 {
-  "name": "data-validation-studio",
+  "name": "charles-api-studio",
   "description": "Um laboratório de APIs, criado para simular integrações, prototipar validações e criar mocks realistas.",
   "version": "1.0.0",
   "scripts": {

@@ -196,7 +196,7 @@
         <!-- Result Section -->
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
             <div class="bg-github-bg px-6 py-4 border-b border-github-border flex justify-between items-center">
-                <h2 class="text-md font-bold ">Detalhes da Compra</h2>
+                <h2 class="text-md font-bold ">Detalhes do Pedido</h2>
                 <p id="resultTitle" class="text-md">Resultado da Validação</p>
             </div>
             
@@ -311,6 +311,7 @@
         };
         
         async function loadIntegration(id) {
+            
             const resultContent = document.getElementById('resultContent');
             
             resultContent.innerHTML = `
@@ -323,11 +324,11 @@
             try {
                 const integration = await fetch(`${API_BASE}/order/${id}`);
                 const response = await integration.json();
-                
-                if (!fetch.ok) {
-                    throw new Error(data.error || 'Erro ao buscar dados');
+ 
+                if (!response.success) {
+                    throw new Error(response.error || 'Erro ao buscar dados');
                 }
-                
+               
                 displayIntegration(response.data);
                 
             } catch (error) {
@@ -354,7 +355,7 @@
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             // Determina o status do pedido com base no order_id
-            const orderStatus = orderId ? "Pedido Realizado" : "Pedido Pendente";
+            const orderStatus = orderId ? "Pedido Iniciado" : "Pedido não iniciado";
             const orderIdDisplay = orderId ? `#${orderId}` : `#${quoteId}`;
             
             resultContent.innerHTML = `
@@ -379,7 +380,7 @@
                         ${sessionData.weather ? `
                             <div class="space-y-1">
                                 <p class="text-lg font-bold">${sessionData.weather.condition}</p>
-                                <p class="text-sm text-github-muted">${sessionData.weather.temperature}°C • ${sessionData.weather.humidity}% umidade</p>
+                                <p class="text-sm text-github-muted">${sessionData.weather.temperature}°C • ${sessionData.weather.condition} • ${sessionData.weather.humidity}% de humidade</p>
                             </div>
                         ` : '<p class="text-2xl font-bold text-github-muted">N/A</p>'}
                     </div>
