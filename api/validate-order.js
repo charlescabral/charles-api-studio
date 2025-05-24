@@ -32,6 +32,7 @@ async function handler(req, res) {
   const orderData = req.body;
   const paymentMethodObj = orderData.payment_method || {};
   const method = paymentMethodObj.method || "";
+  const magentoQuoteId = orderData.magento_quote_id || "";
 
   const isValid = method === "cashondelivery";
 
@@ -53,28 +54,34 @@ async function handler(req, res) {
       saveError = error;
 
       if (error) throw error;
+
+      if (savedData && savedData.length > 0) {
+        const recordId = savedData[0].id;
+        return res.json({
+          status: "sucesso",
+          valido: true,
+          order_id: `CHARLES_APROVED_${recordId}${magentoQuoteId}`,
+          id: recordId,
+          mensagem: "Método de pagamento aprovado",
+        });
+      }
     }
 
     return res.json({
-      status: isValid ? "ok" : "erro",
-      valido: isValid,
+      status: "erro",
+      valido: false,
       payment_method: method,
-      mensagem: isValid
-        ? "Meio de pagamento válido"
-        : "Meio de pagamento não aceito",
-      saved: isValid ? true : false,
-      id: savedData?.[0]?.id,
+      mensagem: "Meio de pagamento não aceito",
+      saved: false,
     });
   } catch (error) {
     return res.json({
-      status: isValid ? "ok" : "erro",
-      valido: isValid,
+      status: "erro",
+      valido: false,
       payment_method: method,
-      mensagem: isValid
-        ? "Meio de pagamento válido"
-        : "Meio de pagamento não aceito",
+      mensagem: "Erro ao processar o pagamento",
       saved: false,
-      error: error,
+      error: error.message || String(error),
     });
   }
 }
