@@ -29,7 +29,7 @@ async function handler(req, res) {
 
     return res.json({
       success: true,
-      validation: data,
+      data: data,
     });
   } catch (error) {
     return res.status(500).json({
