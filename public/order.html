@@ -353,26 +353,33 @@
             // Atualizar o título com o nome do cliente e URL da loja
             const customerName = order.customer?.firstname || 'Cliente';
             const total = order.quote.grand_total || '0';
+            const idOrder = order.quote.id || '0';
             const storeUrl = order.store?.base_url || 'Loja';
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             resultContent.innerHTML = `
                 <!-- Info Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
                     <!-- ID Card -->
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-1">
+                        <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID do Pedido</h3>
+                        <p class="text-2xl font-bold">#${idOrder}</p>
+                    </div>
+
+                    <!-- ID Card -->
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-1">
                         <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">ID da Integracao</h3>
                         <p class="text-2xl font-bold">#${validation.id}</p>
                     </div>
                     
                     <!-- IP Card -->
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-2">
                         <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Endereço IP do comprador</h3>
                         <p class="text-2xl font-bold font-mono">${sessionData.ip_address || 'N/A'}</p>
                     </div>
                     
                     <!-- Weather Card -->
-                    <div class="bg-github-bg p-6 rounded-lg border border-github-border">
+                    <div class="bg-github-bg p-6 rounded-lg border border-github-border col-span-2">
                         <h3 class="text-xs uppercase tracking-wider text-github-accent font-semibold mb-2">Clima no momento da compra</h3>
                         ${sessionData.weather ? `
                             <div class="space-y-1">
