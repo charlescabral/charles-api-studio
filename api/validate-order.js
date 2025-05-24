@@ -32,20 +32,27 @@ async function handler(req, res) {
   const orderData = req.body;
   const { payment_method } = orderData;
 
-  const validMethods = ["credit_card", "debit_card", "pix", "boleto", "paypal"];
-  const isValid = validMethods.includes(payment_method);
+  const isValid = payment_method === "cashondelivery";
 
   try {
-    const { data, error } = await supabase
-      .from("data-validation-studio")
-      .insert([
-        {
-          order: orderData,
-        },
-      ])
-      .select();
+    let savedData = null;
+    let saveError = null;
 
-    if (error) throw error;
+    if (isValid) {
+      const { data, error } = await supabase
+        .from("data-validation-studio")
+        .insert([
+          {
+            order: orderData,
+          },
+        ])
+        .select();
+
+      savedData = data;
+      saveError = error;
+
+      if (error) throw error;
+    }
 
     return res.json({
       status: isValid ? "ok" : "erro",
@@ -54,8 +61,8 @@ async function handler(req, res) {
       mensagem: isValid
         ? "Meio de pagamento válido"
         : "Meio de pagamento não aceito",
-      saved: true,
-      id: data?.[0]?.id,
+      saved: isValid ? true : false,
+      id: savedData?.[0]?.id,
     });
   } catch (error) {
     return res.json({
