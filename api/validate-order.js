@@ -45,7 +45,7 @@ async function handler(req, res) {
 
     if (isValid) {
       const { data: foundData, error: searchError } = await supabase
-        .from("orders")
+        .from("charles-api-studio")
         .select()
         .eq("quote_id", magentoQuoteId)
         .maybeSingle();
@@ -55,10 +55,10 @@ async function handler(req, res) {
 
       const operation = existingData
         ? supabase
-            .from("orders")
+            .from("charles-api-studio")
             .update({ order: orderData })
             .eq("id", existingData.id)
-        : supabase.from("orders").insert({ order: orderData });
+        : supabase.from("charles-api-studio").insert({ order: orderData });
 
       const { data, error } = await operation.select();
 
