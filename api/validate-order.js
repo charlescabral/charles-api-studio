@@ -1,9 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { handleCors } from "../src/helpers/cors.js";
-import {
-  validateRequest,
-  validateRequiredFields,
-} from "../src/helpers/security.js";
+import { validateRequest } from "../src/helpers/security.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -56,9 +53,15 @@ async function handler(req, res) {
       const operation = existingData
         ? supabase
             .from("charles-api-studio")
-            .update({ order: orderData })
+            .update({
+              order: orderData,
+              quote_id: magentoQuoteId,
+            })
             .eq("id", existingData.id)
-        : supabase.from("charles-api-studio").insert({ order: orderData });
+        : supabase.from("charles-api-studio").insert({
+            order: orderData,
+            quote_id: magentoQuoteId,
+          });
 
       const { data, error } = await operation.select();
 
