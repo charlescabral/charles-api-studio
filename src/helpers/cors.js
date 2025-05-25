@@ -1,28 +1,24 @@
-export function validateRequest(req) {
-  const userAgent = req.headers["user-agent"] || "";
+export function setCorsHeaders(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, x-api-key, X-Requested-With"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "86400");
+}
 
-  // User-Agents permitidos para navegadores
-  const browserUserAgents = ["Mozilla", "Chrome", "Safari", "Firefox", "Edge"];
+export function handleCors(req, res, handler) {
+  setCorsHeaders(res);
 
-  // User-Agents permitidos para servidores/APIs
-  const serverUserAgents = [
-    "curl",
-    "Magento",
-    "PHP",
-    "GuzzleHttp",
-    "PostmanRuntime",
-  ];
-
-  const isValidBrowser = browserUserAgents.some((ua) => userAgent.includes(ua));
-  const isValidServer = serverUserAgents.some((ua) => userAgent.includes(ua));
-
-  if (!isValidBrowser && !isValidServer) {
-    return {
-      valid: false,
-      code: 403,
-      error: "Invalid user agent",
-    };
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
   }
 
-  return { valid: true };
+  return handler(req, res);
 }
