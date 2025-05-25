@@ -357,13 +357,13 @@
             const customerName = order.customer?.firstname || 'Cliente';
             const total = order.quote.grand_total || '0';
             const quoteId = data.quote_id || order.quote.id || '0';
-            const orderId = data.order_id;
+            const entityId = data.entity_id;
             const storeUrl = order.store?.base_url || 'Loja';
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
             // Determina o status do pedido com base no order_id
-            const orderStatus = orderId ? "Entity" : "Quote";
-            const orderIdDisplay = orderId ? `#${orderId}` : `#${quoteId}`;
+            const orderStatus = entityId ? "Entity" : "Quote";
+            const orderIdDisplay = entityId ? `#${entityId}` : `#${quoteId}`;
             
             resultContent.innerHTML = `
                 <!-- Info Cards -->
