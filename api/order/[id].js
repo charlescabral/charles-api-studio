@@ -22,7 +22,7 @@ async function handler(req, res) {
 
     if (error) {
       if (error.code === "PGRST116") {
-        return res.status(404).json({ error: "Validação não encontrada" });
+        return res.status(404).json({ error: "Pedido não encontrado" });
       }
       throw error;
     }
