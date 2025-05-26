@@ -1,12 +1,11 @@
 const requestCounts = new Map();
 const blacklist = new Set();
 
-// Configuração padrão do rate limit
 const DEFAULT_RATE_LIMIT = {
-  windowMs: 60 * 1000, // 1 minuto
-  maxRequests: 300, // máximo de requisições
-  blockOnExceed: true, // bloquear IP quando exceder
-  blockDuration: 60 * 60 * 1000, // duração do bloqueio (1 hora)
+  maxRequests: 300,
+  windowMs: 60 * 1000,
+  blockOnExceed: true,
+  blockDuration: 60 * 60 * 1000,
 };
 
 const BLOCKED_AGENTS = [
@@ -20,19 +19,16 @@ const BLOCKED_AGENTS = [
 
 const MAX_PAYLOAD_SIZE = 10000;
 
-// Armazena quando cada IP foi bloqueado
 const blockedIPs = new Map();
 
 export function validateRequest(req, options = {}) {
   const config = { ...DEFAULT_RATE_LIMIT, ...options };
   const ip = req.headers["x-forwarded-for"]?.split(",")[0] || "unknown";
 
-  // Verifica se o IP está na blacklist permanente
   if (blacklist.has(ip)) {
     return { valid: false, error: "IP permanently blocked", code: 403 };
   }
 
-  // Verifica se o IP está temporariamente bloqueado
   if (blockedIPs.has(ip)) {
     const blockedTime = blockedIPs.get(ip);
     const now = Date.now();
@@ -47,9 +43,8 @@ export function validateRequest(req, options = {}) {
         code: 429,
       };
     } else {
-      // Remove o bloqueio temporário se expirou
       blockedIPs.delete(ip);
-      requestCounts.delete(ip); // Limpa o histórico de requisições
+      requestCounts.delete(ip);
     }
   }
 
@@ -64,7 +59,6 @@ export function validateRequest(req, options = {}) {
 
   if (validRequests.length >= config.maxRequests) {
     if (config.blockOnExceed) {
-      // Bloqueia temporariamente
       blockedIPs.set(ip, now);
       return {
         valid: false,
@@ -74,7 +68,6 @@ export function validateRequest(req, options = {}) {
         code: 429,
       };
     } else {
-      // Apenas rejeita a requisição sem bloquear
       return {
         valid: false,
         error: `Rate limit exceeded (${config.maxRequests} requests per ${
