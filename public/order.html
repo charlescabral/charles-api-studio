@@ -191,7 +191,7 @@
         <div id="resultSection" class="bg-github-surface rounded-xl border border-github-border overflow-hidden shadow-xl">
             <div class="bg-github-bg px-6 py-4 border-b border-github-border flex justify-between items-center">
                 <h2 class="text-md font-bold ">Detalhes do Pedido</h2>
-                <p id="resultTitle" class="text-md text-github-muted"></p>
+                <p id="resultTitle" class="text-md text-github-muted text-sm"></p>
             </div>
             
             <div id="resultContent" class="p-8">
@@ -361,7 +361,6 @@
             const storeUrl = order.store?.base_url || 'Loja';
             resultTitle.textContent = `${customerName} gastou $${total} na Loja ${storeUrl}`;
             
-            // Determina o status do pedido com base no order_id
             const orderStatus = entityId ? "Entity" : "Quote";
             const orderIdDisplay = entityId ? `#${entityId}` : `#${quoteId}`;
             
@@ -396,7 +395,7 @@
                 <!-- JSON Viewer -->
                 <div class="mb-6">
                     <h3 class="text-lg font-light mb-4 text-center">
-                        Dados do pedido/sessão obtidos pelo Modulo Charles_OrderAnalizer
+                        Dados da sessão e carrinho obtidos pelo Modulo OrderAnalizer no momento da compra
                     </h3>
                     <div class="bg-github-bg border border-github-border rounded-lg p-6 overflow-x-auto">
                         <div class="json-container">${jsonViewer(order, false)}</div>
